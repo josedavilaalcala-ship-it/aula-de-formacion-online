@@ -114,6 +114,13 @@ th { font-size: 13px; color: var(--muted); font-weight: 600; }
 .help { background: #f3f6fd; border: 1px solid #dbe4fa; border-radius: 8px; padding: 10px 12px; font-size: 14px; }
 .help code { background: #fff; padding: 1px 5px; border-radius: 4px; border: 1px solid var(--line); }
 .meet-link { font-size: 17px; word-break: break-all; }
+/* Grupo seleccionado en "Grupos": fila resaltada y zona de gestión en otro color */
+#groups-list tr.selected td { background: #e3ecfd; }
+#groups-list tr.selected td:first-child { box-shadow: inset 4px 0 0 var(--primary); }
+.group-detail { background: #eaf1fe; border: 2px solid #b9cdf5; border-radius: 14px; padding: 14px 14px 2px; margin-bottom: 16px; }
+.group-detail-head { display: flex; align-items: center; gap: 10px; margin: 0 4px 12px; color: #1d3f8f; }
+.group-detail-head h2 { margin: 0; font-size: 18px; flex: 1; }
+.group-detail .card { border-color: #cddcf8; }
 /* Cuadrante de tutorías (como la hoja de cálculo) */
 .sheet-title { background: #0f9d58; color: #fff; text-align: center; padding: 8px 10px; border-radius: 8px 8px 0 0; font-weight: 600; }
 .sheet-sub { background: #0f9d58; color: #e6f4ea; text-align: center; font-size: 13px; padding: 0 10px 8px; }
@@ -187,9 +194,13 @@ table.grid td.mia button { margin-top: 4px; }
           </div>
         </div>
 
-        <div id="group-detail" class="hidden">
+        <div id="group-detail" class="group-detail hidden">
+          <div class="group-detail-head">
+            <h2>Gestionando el grupo: <span id="gd-title"></span></h2>
+            <button class="small secondary" id="gd-close">Cerrar ✕</button>
+          </div>
           <div class="card">
-            <h2 id="gd-title"></h2>
+            <h2>Datos del grupo</h2>
             <form id="gd-form" class="row">
               <div><label>Nombre</label><input name="nombre" required></div>
               <div style="flex-basis:320px"><label>Enlace de Google Meet</label><input name="meet" placeholder="https://meet.google.com/…"></div>
@@ -546,7 +557,7 @@ Un saludo.</textarea></div>
       $('#lnk-cal').href = gUrl('https://calendar.google.com/calendar/r');
       $('#lnk-web').href = info.webUrl;
       $('#groups-list').innerHTML = info.grupos.map((g) => `
-        <tr><td><b>${esc(g.nombre)}</b>${g.meet ? '' : '<div class="muted">⚠ sin enlace de Meet</div>'}</td><td>${g.alumnos}</td><td>${g.documentos}</td>
+        <tr class="${currentGroup && currentGroup.id === g.id && !$('#group-detail').classList.contains('hidden') ? 'selected' : ''}" data-row="${esc(g.id)}"><td><b>${esc(g.nombre)}</b></td><td>${g.alumnos}</td><td>${g.documentos}</td>
         <td style="text-align:right"><button class="small secondary" data-open="${esc(g.id)}">Gestionar</button>
         <button class="small danger" data-del="${esc(g.id)}">Borrar</button></td></tr>`).join('')
         || '<tr><td colspan="4" class="muted">Aún no hay grupos.</td></tr>';
@@ -584,8 +595,19 @@ Un saludo.</textarea></div>
       }
     });
 
+    function markSelected(id) {
+      document.querySelectorAll('#groups-list tr[data-row]').forEach((tr) => tr.classList.toggle('selected', tr.dataset.row === id));
+    }
+
+    $('#gd-close').addEventListener('click', () => {
+      $('#group-detail').classList.add('hidden');
+      markSelected(null);
+      $('#groups-list').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+
     async function openGroup(id) {
       $('#group-detail').classList.remove('hidden');
+      markSelected(id);
       $('#gd-title').textContent = 'Cargando…';
       currentGroup = await adm('adminGroup', id);
       const g = currentGroup;
