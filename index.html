@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aula Online</title>
+  <base target="_top">
+  <style>
+:root {
+  --bg: #f5f6f8;
+  --card: #ffffff;
+  --text: #1d2330;
+  --muted: #667085;
+  --line: #e3e6eb;
+  --primary: #2459d6;
+  --primary-ink: #ffffff;
+  --ok: #18794e;
+  --ok-bg: #e7f6ee;
+  --danger: #c4320a;
+  --danger-bg: #fdeeea;
+  --radius: 10px;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+header.top {
+  background: var(--card);
+  border-bottom: 1px solid var(--line);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+header.top h1 { font-size: 18px; margin: 0; margin-right: auto; }
+nav.tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+nav.tabs button { background: none; color: var(--muted); border: none; padding: 8px 12px; border-radius: 8px; }
+nav.tabs button.active { background: #e8eefc; color: var(--primary); }
+main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-bottom: 16px;
+}
+.card h2 { margin: 0 0 12px; font-size: 17px; }
+.card h3 { margin: 16px 0 8px; font-size: 15px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: end; }
+.row > * { flex: 1 1 160px; }
+.row > .shrink { flex: 0 0 auto; }
+label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+input, select, textarea {
+  width: 100%;
+  font: inherit;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--text);
+}
+textarea { min-height: 160px; resize: vertical; }
+input[type=checkbox] { width: auto; }
+button, .btn {
+  font: inherit;
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--primary);
+  background: var(--primary);
+  color: var(--primary-ink);
+  text-decoration: none;
+  display: inline-block;
+  white-space: nowrap;
+}
+button.secondary, .btn.secondary { background: #fff; color: var(--primary); }
+button.danger { background: #fff; color: var(--danger); border-color: #f1b8a8; }
+button.small { padding: 4px 10px; font-size: 13px; }
+button:disabled { opacity: .5; cursor: default; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 13px; color: var(--muted); font-weight: 600; }
+.table-wrap { overflow-x: auto; }
+.muted { color: var(--muted); font-size: 13px; }
+.code { font-family: ui-monospace, Menlo, monospace; letter-spacing: 1px; }
+.pill { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 12px; background: #eef1f5; }
+.pill.ok { background: var(--ok-bg); color: var(--ok); }
+.pill.full { background: var(--danger-bg); color: var(--danger); }
+.msg { padding: 10px 12px; border-radius: 8px; margin: 10px 0; }
+.msg.ok { background: var(--ok-bg); color: var(--ok); }
+.msg.err { background: var(--danger-bg); color: var(--danger); }
+.hidden { display: none !important; }
+.list-check { max-height: 320px; overflow: auto; border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; }
+.list-check label { display: flex; gap: 8px; align-items: center; color: var(--text); font-size: 14px; padding: 4px 0; margin: 0; }
+.weekdays { display: flex; gap: 6px; flex-wrap: wrap; }
+.weekdays label { display: flex; gap: 4px; align-items: center; color: var(--text); margin: 0; border: 1px solid var(--line); padding: 4px 8px; border-radius: 8px; }
+.login-box { max-width: 380px; margin: 10vh auto; }
+.login-box h1 { font-size: 22px; margin: 0 0 4px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+.day-title { font-weight: 600; margin: 14px 0 6px; }
+.slot { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.slot .time { font-weight: 600; min-width: 110px; }
+.slot .info { flex: 1; }
+.class-hero { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.class-hero .info { flex: 1; }
+.meeting-frame { width: 100%; height: 70vh; border: 0; border-radius: var(--radius); margin-top: 12px; background: #111; }
+.loading { color: var(--muted); font-size: 14px; padding: 8px 0; }
+.links { display: flex; gap: 8px; flex-wrap: wrap; }
+.help { background: #f3f6fd; border: 1px solid #dbe4fa; border-radius: 8px; padding: 10px 12px; font-size: 14px; }
+.help code { background: #fff; padding: 1px 5px; border-radius: 4px; border: 1px solid var(--line); }
+.meet-link { font-size: 17px; word-break: break-all; }
+/* Cuadrante de tutorías (como la hoja de cálculo) */
+.sheet-title { background: #0f9d58; color: #fff; text-align: center; padding: 8px 10px; border-radius: 8px 8px 0 0; font-weight: 600; }
+.sheet-sub { background: #0f9d58; color: #e6f4ea; text-align: center; font-size: 13px; padding: 0 10px 8px; }
+table.grid { border-collapse: collapse; width: 100%; min-width: 520px; }
+table.grid th, table.grid td { border: 1px solid #cfd8dc; text-align: center; padding: 6px; vertical-align: middle; }
+table.grid thead th { background: #b6d7a8; color: #1d2330; font-size: 13px; line-height: 1.3; }
+table.grid thead th small { display: block; font-weight: 400; }
+table.grid td.hora { background: #fff; font-weight: 600; white-space: nowrap; font-size: 14px; }
+table.grid td.vacio { background: #fafafa; }
+table.grid td.libre button { width: 100%; }
+table.grid td.ocupada { background: #efefef; color: #8a8f98; font-size: 13px; }
+table.grid td.mia { background: var(--ok-bg); color: var(--ok); font-weight: 600; font-size: 13px; }
+table.grid td.mia button { margin-top: 4px; }
+.week { margin-bottom: 18px; }
+.week-title { font-weight: 600; margin: 8px 0 6px; }
+</style>
+
+</head>
+<body>
+  <section id="login" class="hidden">
+    <div class="card login-box">
+      <h1>Aula Online</h1>
+      <p class="muted">Introduce la clave que has recibido por correo.</p>
+      <form id="login-form">
+        <label for="code">Clave de acceso</label>
+        <input id="code" class="code" autocomplete="off" autocapitalize="characters" required>
+        <div style="margin-top:12px"><button type="submit" id="login-btn">Entrar</button></div>
+        <div id="login-msg"></div>
+      </form>
+    </div>
+  </section>
+
+  <section id="app" class="hidden">
+    <header class="top">
+      <h1 id="group-name">Aula</h1>
+      <span class="muted" id="student-name"></span>
+      <button class="secondary small" id="logout">Salir</button>
+    </header>
+    <main>
+      <div class="grid2">
+        <div class="card">
+          <h2>Próxima clase grupal</h2>
+          <div id="meet"></div>
+        </div>
+        <div class="card">
+          <h2>Clases grupales</h2>
+          <div id="group-classes"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Tutorías individuales</h2>
+        <div id="tut-nota"></div>
+        <div id="my-tutoria"></div>
+        <div id="tut-msg"></div>
+        <div class="sheet-title">Calendario de tutorías individuales</div>
+        <div class="sheet-sub">Apúntate en el hueco que quieras para realizar tu tutoría individual</div>
+        <div id="tutorias" style="margin-top:12px"></div>
+      </div>
+
+      <div class="card">
+        <h2>Mis trabajos</h2>
+        <p class="muted">Envía aquí tus trabajos (programación, unidades didácticas…) para que tu profesor los corrija. Cuando estén corregidos te llegará un correo y los tendrás también aquí.</p>
+        <div id="trab-nota"></div>
+        <form id="upload-form" class="row">
+          <div style="flex-basis:220px"><label>Título</label><input name="titulo" required placeholder="Ej.: Unidad didáctica 3"></div>
+          <div style="flex-basis:220px"><label>Archivo (PDF, Word… máx. 20 MB)</label><input type="file" name="archivo" required></div>
+          <div class="shrink"><button type="submit" id="upload-btn">Enviar a corregir</button></div>
+        </form>
+        <div id="upload-msg"></div>
+        <div id="entregas" style="margin-top:10px"></div>
+      </div>
+
+      <div class="card">
+        <h2>Documentos</h2>
+        <div id="docs"></div>
+      </div>
+    </main>
+  </section>
+
+  <p id="boot" class="loading" style="text-align:center;margin-top:20vh">Cargando…</p>
+
+  <script>
+  // Sustituye google.script.run: llama a la API de Apps Script sin enviar cookies de Google
+  (function () {
+    var API_URL = "https://script.google.com/macros/s/AKfycbzCzTXvFzifJzwUmAg0AARtRtbNrsA20tEn4h8JzotOZmVOOu-0jGwHTJDa2xrLTQeQ/exec";
+    function make(ok, fail) {
+      return new Proxy({}, { get: function (_, fn) {
+        if (fn === 'withSuccessHandler') return function (f) { return make(f, fail); };
+        if (fn === 'withFailureHandler') return function (f) { return make(ok, f); };
+        return function () {
+          var args = Array.prototype.slice.call(arguments);
+          fetch(API_URL, {
+            method: 'POST', credentials: 'omit', redirect: 'follow',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ fn: fn, args: args }),
+          })
+            .then(function (r) { return r.json(); })
+            .then(function (d) { if (d.error != null) { fail && fail(new Error(d.error)); } else { ok && ok(d.result); } })
+            .catch(function () { fail && fail(new Error('No se ha podido conectar. Revisa tu conexión a internet y vuelve a intentarlo.')); });
+        };
+      } });
+    }
+    window.google = { script: { run: make(null, null) } };
+  })();
+</script><script>
+  const TZ = 'Europe/Madrid';
+
+  function call(fn, ...args) {
+    return new Promise((resolve, reject) => {
+      google.script.run
+        .withSuccessHandler(resolve)
+        .withFailureHandler((e) => reject(new Error(String((e && e.message) || e).replace(/^(Exception|Error):\s*/, ''))))[fn](...args);
+    });
+  }
+
+  // localStorage con respaldo en memoria (algunos navegadores lo bloquean)
+  const memory = {};
+  const store = {
+    get(k) {
+      try { const v = localStorage.getItem(k); if (v != null) return v; } catch (e) {}
+      return memory[k] == null ? null : memory[k];
+    },
+    set(k, v) {
+      if (v == null) delete memory[k]; else memory[k] = v;
+      try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {}
+    },
+  };
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  const $ = (sel, root = document) => root.querySelector(sel);
+
+  function flash(el, text, ok = true) {
+    el.innerHTML = `<div class="msg ${ok ? 'ok' : 'err'}">${esc(text)}</div>`;
+    if (ok) setTimeout(() => { el.innerHTML = ''; }, 6000);
+  }
+
+  function dayKey(iso) { return new Date(iso).toLocaleDateString('sv-SE', { timeZone: TZ }); }
+  function fmtTime(iso) { return new Date(iso).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', timeZone: TZ }); }
+  function fmtDay(iso) {
+    const s = new Date(iso).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', timeZone: TZ });
+    return s[0].toUpperCase() + s.slice(1);
+  }
+
+  // Partes de una clase larga: Meet gratuito corta cada hora → pausa de 5 min antes de cada corte
+  // ini y fin en formato "HH:MM"
+  function partes(ini, fin) {
+    const toMin = (t) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 5));
+    const toStr = (m) => String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
+    const s = toMin(ini), e = toMin(fin);
+    const out = [];
+    for (let t = s; t < e; t += 60) out.push([toStr(t), toStr(t + 60 >= e ? e : t + 55)]);
+    return out;
+  }
+
+  function groupByDay(list) {
+    const days = new Map();
+    for (const x of list) {
+      const k = dayKey(x.inicio);
+      if (!days.has(k)) days.set(k, []);
+      days.get(k).push(x);
+    }
+    return days;
+  }
+</script>
+
+  <script>
+    let state;
+
+    function showLogin() {
+      $('#boot').classList.add('hidden');
+      $('#app').classList.add('hidden');
+      $('#login').classList.remove('hidden');
+    }
+
+    // Recupera la sesión; si ha caducado, vuelve a entrar con la clave guardada
+    async function load() {
+      const token = store.get('aula_token');
+      try {
+        if (!token) throw new Error('SESION');
+        state = await call('studentData', token);
+      } catch (err) {
+        if (err.message !== 'SESION') throw err;
+        const code = store.get('aula_code');
+        if (!code) return showLogin();
+        try {
+          store.set('aula_token', await call('studentLogin', code));
+        } catch (e) {
+          store.set('aula_code', null);
+          return showLogin();
+        }
+        state = await call('studentData', store.get('aula_token'));
+      }
+      render();
+    }
+
+    $('#login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      $('#login-btn').disabled = true;
+      try {
+        const code = $('#code').value.trim().toUpperCase();
+        store.set('aula_token', await call('studentLogin', code));
+        store.set('aula_code', code);
+        $('#login').classList.add('hidden');
+        $('#boot').classList.remove('hidden');
+        await load();
+      } catch (err) { flash($('#login-msg'), err.message, false); }
+      $('#login-btn').disabled = false;
+    });
+
+    $('#logout').addEventListener('click', () => {
+      store.set('aula_token', null);
+      store.set('aula_code', null);
+      showLogin();
+    });
+
+    const link = (url) => `<a class="meet-link" href="${esc(url)}" target="_blank" rel="noopener">${esc(url)}</a>`;
+    const range = (x) => `${fmtTime(x.inicio)}–${fmtTime(x.fin)}`;
+
+    // Lunes de la semana de una fecha (clave YYYY-MM-DD)
+    function weekKey(iso) {
+      const d = new Date(dayKey(iso) + 'T12:00:00Z');
+      d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7));
+      return d.toISOString().slice(0, 10);
+    }
+
+    function renderGrid(tutorias) {
+      const weeks = new Map();
+      for (const t of tutorias) {
+        const k = weekKey(t.inicio);
+        if (!weeks.has(k)) weeks.set(k, []);
+        weeks.get(k).push(t);
+      }
+      let html = '';
+      for (const [monday, list] of weeks) {
+        const days = [...new Set(list.map((t) => dayKey(t.inicio)))].sort();
+        const rows = [...new Set(list.map(range))].sort();
+        const title = new Date(monday + 'T12:00:00Z').toLocaleDateString('es-ES', { day: 'numeric', month: 'long', timeZone: 'UTC' });
+        const sesiones = [...new Set(list.map((t) => t.sesion).filter(Boolean))].join(' / ');
+        html += `<div class="week"><div class="week-title">Semana del ${title}${sesiones ? ' · ' + esc(sesiones) : ''}</div><div class="table-wrap"><table class="grid"><thead><tr><th></th>`;
+        for (const d of days) {
+          const date = new Date(d + 'T12:00:00Z');
+          html += `<th>${date.toLocaleDateString('es-ES', { weekday: 'long', timeZone: 'UTC' }).toUpperCase()}
+            <small>${date.toLocaleDateString('es-ES', { day: 'numeric', month: 'numeric', timeZone: 'UTC' })}</small></th>`;
+        }
+        html += '</tr></thead><tbody>';
+        for (const r of rows) {
+          html += `<tr><td class="hora">${r.replace('–', '/')}</td>`;
+          for (const d of days) {
+            const t = list.find((x) => dayKey(x.inicio) === d && range(x) === r);
+            if (!t) html += '<td class="vacio"></td>';
+            else if (t.estado === 'mia') html += `<td class="mia">✓ ${esc(state.alumno.nombre.split(' ')[0])}<br><button class="danger small" data-cancel="${esc(t.id)}">Cancelar</button></td>`;
+            else if (t.estado === 'ocupada') html += '<td class="ocupada">Ocupado</td>';
+            else html += `<td class="libre"><button class="small" data-book="${esc(t.id)}" ${full(t.sesion) ? 'disabled' : ''}>Apuntarme</button></td>`;
+          }
+          html += '</tr>';
+        }
+        html += '</tbody></table></div></div>';
+      }
+      return html;
+    }
+
+    const mineList = () => state.tutorias.filter((t) => t.estado === 'mia');
+    // El límite de tutorías se cuenta por sesión (como en el servidor)
+    const full = (sesion) => state.grupo.maxTutorias
+      && mineList().filter((t) => (t.sesion || '') === (sesion || '')).length >= state.grupo.maxTutorias;
+
+    function render() {
+      $('#boot').classList.add('hidden');
+      $('#app').classList.remove('hidden');
+      $('#group-name').textContent = state.grupo.nombre;
+      $('#student-name').textContent = state.alumno.nombre;
+
+      const next = state.clases[0];
+      if (next) {
+        const p = partes(fmtTime(next.inicio), fmtTime(next.fin));
+        $('#meet').innerHTML = `<p><b>${fmtDay(next.inicio)}, ${range(next)}</b><br>${esc(next.titulo)}</p>
+          ${next.meet ? `<p>Google Meet: ${link(next.meet)}</p>` : ''}
+          ${p.length > 1 ? `<div class="msg" style="background:#eef3fd;color:#1d3f8f">La clase tiene ${p.length} partes:
+              <b>${p.map((x) => x.join('–')).join('</b> · pausa · <b>')}</b>.<br>
+              Google Meet corta la llamada cada hora: <b>después de cada pausa, vuelve a pulsar el mismo enlace</b>.</div>` : ''}`;
+      } else {
+        $('#meet').innerHTML = state.grupo.meet
+          ? `<p>Google Meet: ${link(state.grupo.meet)}</p>`
+          : '<p class="muted">Todavía no hay clases grupales programadas.</p>';
+      }
+      const mt = mineList()[0];
+      if (mt) $('#meet').innerHTML += `<div class="msg ok">Tu tutoría individual: <b>${fmtDay(mt.inicio)}, ${range(mt)}</b></div>`;
+
+      $('#group-classes').innerHTML = state.clases.length
+        ? state.clases.slice(0, 8).map((c) => `<div class="slot"><span class="time">${fmtDay(c.inicio)}</span>
+            <span class="info">${range(c)}<div class="muted">${esc(c.titulo)}</div>
+            ${c.meet ? `<div class="muted"><a href="${esc(c.meet)}" target="_blank" rel="noopener">Enlace de Meet</a></div>` : ''}</span></div>`).join('')
+          + '<p class="muted">Recibes cada clase como invitación en tu correo y en tu Google Calendar.</p>'
+        : '<p class="muted">No hay clases grupales programadas.</p>';
+
+      const mine = mineList();
+      $('#tut-nota').innerHTML = state.grupo.nota && !mine.length ? `<p class="muted">📎 ${esc(state.grupo.nota)}</p>` : '';
+      $('#my-tutoria').innerHTML = mine.map((t) => `
+        <div class="msg ok">Tu tutoría${t.sesion ? ' «' + esc(t.sesion) + '»' : ''}: <b>${fmtDay(t.inicio)}, ${range(t)}</b>
+        ${t.meet ? `<br>Google Meet: ${link(t.meet)}` : ''}
+        <div style="font-size:13px;margin-top:4px">📩 La invitación con el enlace de Meet está en tu correo (${esc(state.alumno.email)}) y en tu Google Calendar.</div>
+        ${state.grupo.nota ? `<div style="font-size:13px;margin-top:4px">📎 ${esc(state.grupo.nota)}</div>` : ''}</div>`).join('')
+        + (mine.length && state.grupo.maxTutorias ? '<p class="muted">Si quieres cambiar de hueco, cancela primero tu tutoría.</p>' : '');
+
+      $('#tutorias').innerHTML = state.tutorias.length
+        ? renderGrid(state.tutorias)
+        : '<p class="muted">Ahora mismo no hay huecos de tutoría publicados.</p>';
+
+      renderEntregas();
+
+      $('#docs').innerHTML = state.documentos.length ? state.documentos.map((d) => `
+        <div class="slot"><span class="info"><a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.nombre)}</a></span></div>`).join('')
+        : '<p class="muted">Tu profesor aún no ha compartido documentos.</p>';
+    }
+
+    // ---------- Mis trabajos ----------
+    function renderEntregas() {
+      $('#trab-nota').innerHTML = state.grupo.nota ? `<p class="muted">📎 ${esc(state.grupo.nota)}</p>` : '';
+      const fecha = (f) => f ? fmtDay(f.slice(0, 10) + 'T12:00:00Z') + ', ' + f.slice(11, 16) : ''; // f: hora de Madrid
+      $('#entregas').innerHTML = (state.entregas || []).map((e) => `
+        <div class="slot"><span class="info"><b>${esc(e.titulo)}</b>
+            <div class="muted">Enviado el ${esc(fecha(e.fecha))} · <a href="#" data-dl="${esc(e.id)}|original">${esc(e.nombreArchivo)}</a></div>
+            ${e.estado === 'corregido' ? `
+              <div style="margin-top:6px"><span class="pill ok">✓ Corregido</span> <span class="muted">${esc(fecha(e.fechaCorreccion))}</span></div>
+              ${e.correccionNombre ? `<div style="margin-top:6px"><button class="small" data-dl="${esc(e.id)}|correccion">⬇ Descargar corrección</button></div>` : ''}
+              ${e.comentario ? `<div class="msg" style="background:#eef3fd;color:#1d3f8f;white-space:pre-wrap">${esc(e.comentario)}</div>` : ''}`
+            : `<div style="margin-top:6px"><span class="pill">Pendiente de corrección</span>
+                 <button class="small danger" data-del="${esc(e.id)}">Borrar</button></div>`}
+          </span></div>`).join('') || '<p class="muted">Todavía no has enviado ningún trabajo.</p>';
+    }
+
+    function readAsBase64(file) {
+      return new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(String(r.result).split(',')[1] || '');
+        r.onerror = () => reject(new Error('No se pudo leer el archivo'));
+        r.readAsDataURL(file);
+      });
+    }
+
+    $('#upload-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const f = e.target;
+      const file = f.archivo.files[0];
+      if (!file) return;
+      if (file.size > 20 * 1024 * 1024) return flash($('#upload-msg'), 'El archivo supera los 20 MB', false);
+      $('#upload-btn').disabled = true;
+      flash($('#upload-msg'), 'Enviando…');
+      try {
+        const base64 = await readAsBase64(file);
+        state = await call('studentUpload', store.get('aula_token'), f.titulo.value,
+          { nombre: file.name, mime: file.type || 'application/octet-stream', base64 });
+        f.reset();
+        render();
+        flash($('#upload-msg'), 'Trabajo enviado. Te avisaremos por correo cuando esté corregido.');
+      } catch (err) {
+        if (err.message === 'SESION') return load();
+        flash($('#upload-msg'), err.message, false);
+      }
+      $('#upload-btn').disabled = false;
+    });
+
+    $('#entregas').addEventListener('click', async (e) => {
+      const { dl, del } = e.target.dataset;
+      if (!dl && !del) return;
+      e.preventDefault();
+      try {
+        if (del) {
+          if (!confirm('¿Borrar esta entrega?')) return;
+          state = await call('studentDeleteEntrega', store.get('aula_token'), del);
+          return render();
+        }
+        const [id, cual] = dl.split('|');
+        const old = e.target.textContent;
+        e.target.textContent = 'Descargando…';
+        const f = await call('studentDownload', store.get('aula_token'), id, cual);
+        e.target.textContent = old;
+        const bytes = Uint8Array.from(atob(f.base64), (c) => c.charCodeAt(0));
+        const url = URL.createObjectURL(new Blob([bytes], { type: f.mime }));
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = f.nombre;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 10000);
+      } catch (err) {
+        if (err.message === 'SESION') return load();
+        flash($('#upload-msg'), err.message, false);
+      }
+    });
+
+    $('#tutorias').addEventListener('click', async (e) => {
+      const { book, cancel } = e.target.dataset;
+      if (!book && !cancel) return;
+      if (cancel && !confirm('¿Cancelar tu tutoría?')) return;
+      e.target.disabled = true;
+      e.target.textContent = '…';
+      try {
+        state = await call(book ? 'book' : 'cancelBooking', store.get('aula_token'), book || cancel);
+        render();
+        flash($('#tut-msg'), book
+          ? `Tutoría reservada. Te hemos enviado a ${state.alumno.email} la invitación de Google Calendar con el enlace de Google Meet.`
+          : 'Tutoría cancelada. Te llegará el aviso de cancelación al correo.');
+      } catch (err) {
+        if (err.message === 'SESION') return load();
+        flash($('#tut-msg'), err.message, false);
+        load();
+      }
+    });
+
+    load().catch((err) => { $('#boot').textContent = 'Error: ' + err.message; });
+  </script>
+</body>
+</html>

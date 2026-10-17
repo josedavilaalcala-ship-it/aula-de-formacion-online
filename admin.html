@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Panel del profesor</title>
+  <base target="_top">
+  <style>
+:root {
+  --bg: #f5f6f8;
+  --card: #ffffff;
+  --text: #1d2330;
+  --muted: #667085;
+  --line: #e3e6eb;
+  --primary: #2459d6;
+  --primary-ink: #ffffff;
+  --ok: #18794e;
+  --ok-bg: #e7f6ee;
+  --danger: #c4320a;
+  --danger-bg: #fdeeea;
+  --radius: 10px;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+header.top {
+  background: var(--card);
+  border-bottom: 1px solid var(--line);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+header.top h1 { font-size: 18px; margin: 0; margin-right: auto; }
+nav.tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+nav.tabs button { background: none; color: var(--muted); border: none; padding: 8px 12px; border-radius: 8px; }
+nav.tabs button.active { background: #e8eefc; color: var(--primary); }
+main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-bottom: 16px;
+}
+.card h2 { margin: 0 0 12px; font-size: 17px; }
+.card h3 { margin: 16px 0 8px; font-size: 15px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: end; }
+.row > * { flex: 1 1 160px; }
+.row > .shrink { flex: 0 0 auto; }
+label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+input, select, textarea {
+  width: 100%;
+  font: inherit;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--text);
+}
+textarea { min-height: 160px; resize: vertical; }
+input[type=checkbox] { width: auto; }
+button, .btn {
+  font: inherit;
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--primary);
+  background: var(--primary);
+  color: var(--primary-ink);
+  text-decoration: none;
+  display: inline-block;
+  white-space: nowrap;
+}
+button.secondary, .btn.secondary { background: #fff; color: var(--primary); }
+button.danger { background: #fff; color: var(--danger); border-color: #f1b8a8; }
+button.small { padding: 4px 10px; font-size: 13px; }
+button:disabled { opacity: .5; cursor: default; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 13px; color: var(--muted); font-weight: 600; }
+.table-wrap { overflow-x: auto; }
+.muted { color: var(--muted); font-size: 13px; }
+.code { font-family: ui-monospace, Menlo, monospace; letter-spacing: 1px; }
+.pill { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 12px; background: #eef1f5; }
+.pill.ok { background: var(--ok-bg); color: var(--ok); }
+.pill.full { background: var(--danger-bg); color: var(--danger); }
+.msg { padding: 10px 12px; border-radius: 8px; margin: 10px 0; }
+.msg.ok { background: var(--ok-bg); color: var(--ok); }
+.msg.err { background: var(--danger-bg); color: var(--danger); }
+.hidden { display: none !important; }
+.list-check { max-height: 320px; overflow: auto; border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; }
+.list-check label { display: flex; gap: 8px; align-items: center; color: var(--text); font-size: 14px; padding: 4px 0; margin: 0; }
+.weekdays { display: flex; gap: 6px; flex-wrap: wrap; }
+.weekdays label { display: flex; gap: 4px; align-items: center; color: var(--text); margin: 0; border: 1px solid var(--line); padding: 4px 8px; border-radius: 8px; }
+.login-box { max-width: 380px; margin: 10vh auto; }
+.login-box h1 { font-size: 22px; margin: 0 0 4px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+.day-title { font-weight: 600; margin: 14px 0 6px; }
+.slot { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.slot .time { font-weight: 600; min-width: 110px; }
+.slot .info { flex: 1; }
+.class-hero { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.class-hero .info { flex: 1; }
+.meeting-frame { width: 100%; height: 70vh; border: 0; border-radius: var(--radius); margin-top: 12px; background: #111; }
+.loading { color: var(--muted); font-size: 14px; padding: 8px 0; }
+.links { display: flex; gap: 8px; flex-wrap: wrap; }
+.help { background: #f3f6fd; border: 1px solid #dbe4fa; border-radius: 8px; padding: 10px 12px; font-size: 14px; }
+.help code { background: #fff; padding: 1px 5px; border-radius: 4px; border: 1px solid var(--line); }
+.meet-link { font-size: 17px; word-break: break-all; }
+/* Cuadrante de tutorías (como la hoja de cálculo) */
+.sheet-title { background: #0f9d58; color: #fff; text-align: center; padding: 8px 10px; border-radius: 8px 8px 0 0; font-weight: 600; }
+.sheet-sub { background: #0f9d58; color: #e6f4ea; text-align: center; font-size: 13px; padding: 0 10px 8px; }
+table.grid { border-collapse: collapse; width: 100%; min-width: 520px; }
+table.grid th, table.grid td { border: 1px solid #cfd8dc; text-align: center; padding: 6px; vertical-align: middle; }
+table.grid thead th { background: #b6d7a8; color: #1d2330; font-size: 13px; line-height: 1.3; }
+table.grid thead th small { display: block; font-weight: 400; }
+table.grid td.hora { background: #fff; font-weight: 600; white-space: nowrap; font-size: 14px; }
+table.grid td.vacio { background: #fafafa; }
+table.grid td.libre button { width: 100%; }
+table.grid td.ocupada { background: #efefef; color: #8a8f98; font-size: 13px; }
+table.grid td.mia { background: var(--ok-bg); color: var(--ok); font-weight: 600; font-size: 13px; }
+table.grid td.mia button { margin-top: 4px; }
+.week { margin-bottom: 18px; }
+.week-title { font-weight: 600; margin: 8px 0 6px; }
+</style>
+
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+  <section id="login" class="hidden">
+    <div class="card login-box">
+      <h1>Panel del profesor</h1>
+      <form id="login-form">
+        <label for="password">Contraseña</label>
+        <input id="password" type="password" required>
+        <div style="margin-top:12px"><button type="submit" id="login-btn">Entrar</button></div>
+        <div id="login-msg"></div>
+      </form>
+    </div>
+  </section>
+
+  <p id="boot" class="loading" style="text-align:center;margin-top:20vh">Cargando…</p>
+
+  <section id="app" class="hidden">
+    <header class="top">
+      <h1>Panel del profesor</h1>
+      <nav class="tabs">
+        <button data-tab="groups" class="active">Grupos</button>
+        <button data-tab="tutorias">Tutorías</button>
+        <button data-tab="classes">Clases grupales</button>
+        <button data-tab="entregas">Entregas <span id="ent-count" class="pill full hidden"></span></button>
+        <button data-tab="mail">Correo</button>
+      </nav>
+      <button class="secondary small" id="logout">Salir</button>
+    </header>
+
+    <main>
+      <div class="card">
+        <div class="links">
+          <a class="btn secondary" id="lnk-drive" target="_blank" rel="noopener">📁 Carpeta de documentos (Drive)</a>
+          <a class="btn secondary" id="lnk-cal" href="https://calendar.google.com" target="_blank" rel="noopener">📅 Google Calendar</a>
+          <a class="btn secondary" id="lnk-sheet" target="_blank" rel="noopener">📊 Hoja de datos</a>
+          <a class="btn secondary" id="lnk-web" target="_blank" rel="noopener">👀 Ver web de alumnos</a>
+        </div>
+      </div>
+
+      <!-- ================= GRUPOS ================= -->
+      <div data-panel="groups">
+        <div class="card">
+          <h2>Grupos</h2>
+          <form id="group-form" class="row">
+            <div><label>Nombre del nuevo grupo</label><input name="nombre" required placeholder="Ej.: Martes tarde"></div>
+            <div style="flex-basis:280px"><label>Enlace de Google Meet</label><input name="meet" placeholder="https://meet.google.com/abc-defg-hij"></div>
+            <div style="flex:0 0 150px"><label>Tutorías por alumno</label><input name="maxReservas" type="number" min="0" placeholder="Sin límite"></div>
+            <div class="shrink"><button type="submit">Crear grupo</button></div>
+          </form>
+          <div id="group-form-msg"></div>
+          <div class="table-wrap" style="margin-top:14px">
+            <table><thead><tr><th>Grupo</th><th>Alumnos</th><th>Documentos</th><th></th></tr></thead><tbody id="groups-list"></tbody></table>
+          </div>
+        </div>
+
+        <div id="group-detail" class="hidden">
+          <div class="card">
+            <h2 id="gd-title"></h2>
+            <form id="gd-form" class="row">
+              <div><label>Nombre</label><input name="nombre" required></div>
+              <div style="flex-basis:320px"><label>Enlace de Google Meet</label><input name="meet" placeholder="https://meet.google.com/…"></div>
+              <div style="flex:0 0 150px"><label>Tutorías por alumno</label><input name="maxReservas" type="number" min="0" placeholder="Sin límite"></div>
+              <div class="shrink"><button type="submit">Guardar</button></div>
+            </form>
+            <p class="muted">"Tutorías por alumno": cuántas tutorías individuales puede reservar cada alumno por sesión (vacío = sin límite). El enlace de Meet del grupo es opcional: cada clase grupal y cada tutoría tienen el suyo propio.</p>
+            <div id="gd-msg"></div>
+          </div>
+
+          <div class="card">
+            <h2>Alumnos del grupo</h2>
+            <form id="import-form" class="row">
+              <div><label>Importar desde Excel (.xlsx)</label><input type="file" name="file" accept=".xlsx,.xls,.csv" required></div>
+              <div><label>Modo</label>
+                <select name="mode"><option value="append">Añadir / actualizar</option><option value="replace">Reemplazar todos</option></select></div>
+              <div class="shrink"><button type="submit">Importar</button></div>
+            </form>
+            <p class="muted">La primera fila del Excel debe tener cabeceras: <b>Nombre</b>, <b>Apellidos</b> (opcional), <b>Email</b>, <b>Teléfono</b> (opcional), <b>Clave</b> (opcional; si no la pones se genera sola).</p>
+            <div id="import-msg"></div>
+
+            <h3>Añadir alumno a mano</h3>
+            <form id="student-form" class="row">
+              <div><label>Nombre</label><input name="nombre" required></div>
+              <div><label>Email</label><input name="email" type="email" required></div>
+              <div class="shrink"><button type="submit" class="secondary">Añadir</button></div>
+            </form>
+
+            <div class="row" style="margin-top:16px; align-items:center">
+              <h3 style="margin:0">Listado</h3>
+              <div class="shrink"><button id="gd-mail">Enviar correo a este grupo</button></div>
+            </div>
+            <div class="table-wrap">
+              <table><thead><tr><th>Nombre</th><th>Email</th><th>Clave</th><th></th></tr></thead><tbody id="students-list"></tbody></table>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Documentos de este grupo</h2>
+            <p class="muted">Sube los archivos a la carpeta de Drive (botón de arriba) y marca aquí los que verá este grupo.</p>
+            <div id="gd-docs" class="list-check"></div>
+            <div style="margin-top:10px"><button id="gd-docs-save">Guardar documentos</button></div>
+            <div id="gd-docs-msg"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= TUTORÍAS ================= -->
+      <div data-panel="tutorias" class="hidden">
+        <div class="card">
+          <h2>Publicar huecos de tutoría individual</h2>
+          <form id="tut-form">
+            <div class="row">
+              <div style="flex-basis:300px"><label>Tutoría del folleto (rellena grupo, sesión y fechas)</label>
+                <select id="tut-preset"><option value="">— Elegir —</option></select></div>
+              <div style="flex-basis:300px"><label>Sesión (aparece en el cuadrante y en el aviso)</label><input name="sesion" placeholder="Ej.: Sesión 2 · Revisión de las unidades didácticas"></div>
+            </div>
+            <div class="row" style="margin-top:10px">
+              <div><label>Desde</label><input type="date" name="desde" required></div>
+              <div><label>Hasta (opcional)</label><input type="date" name="hasta"></div>
+              <div><label>Para el grupo</label><select name="grupoId" id="tut-group"></select></div>
+            </div>
+            <div style="margin:10px 0">
+              <label>Días</label>
+              <div class="weekdays">
+                <label><input type="checkbox" name="dia" value="1" checked>Lunes</label>
+                <label><input type="checkbox" name="dia" value="2" checked>Martes</label>
+                <label><input type="checkbox" name="dia" value="3" checked>Miércoles</label>
+                <label><input type="checkbox" name="dia" value="4" checked>Jueves</label>
+                <label><input type="checkbox" name="dia" value="5" checked>Viernes</label>
+                <label><input type="checkbox" name="dia" value="6">Sábado</label>
+              </div>
+            </div>
+            <div><label>Franjas horarias (una por línea, como en tu hoja)</label>
+              <textarea name="franjas" style="min-height:130px">9:30/10:30
+10:45/11:45
+12:00/13:00
+16:00/17:00
+17:15/18:15</textarea></div>
+            <label style="display:flex;gap:8px;align-items:center;color:var(--text);margin-top:10px"><input type="checkbox" name="avisar" checked> <b>Avisar por correo a los alumnos del grupo</b> de que ya pueden apuntarse</label>
+            <details style="margin-top:8px">
+              <summary class="muted" style="cursor:pointer">Ver / editar los textos de los correos</summary>
+              <div style="margin-top:10px"><label>Aviso – asunto</label><input name="asunto" value="Ya puedes elegir tu tutoría individual – {sesion}"></div>
+              <div style="margin-top:8px"><label>Aviso – mensaje</label><textarea name="mensaje">Hola {nombre}:
+
+Ya están publicados los horarios de la tutoría individual «{sesion}», {fechas}.
+
+Entra en {enlace} con tu clave {clave} y apúntate en el hueco que prefieras. Al reservarlo te llegará la invitación de Google Calendar con el enlace de Google Meet.
+
+Si al abrir el enlace ves «no se puede abrir el archivo», ábrelo en una ventana de incógnito o desde el móvil.
+
+Los huecos se asignan por orden de reserva.
+
+Un saludo.</textarea></div>
+              <div style="margin-top:10px"><label>Recordatorio – asunto</label><input name="recAsunto" value="Recordatorio: aún no has elegido tu tutoría – {sesion}"></div>
+              <div style="margin-top:8px"><label>Recordatorio – mensaje</label><textarea name="recMensaje">Hola {nombre}:
+
+Todavía no te has apuntado a la tutoría individual «{sesion}». Quedan huecos libres {fechas}.
+
+Entra en {enlace} con tu clave {clave} y elige el que prefieras.
+
+Si al abrir el enlace ves «no se puede abrir el archivo», ábrelo en una ventana de incógnito o desde el móvil.
+
+Un saludo.</textarea></div>
+              <p class="muted">Variables: {nombre}, {clave}, {enlace}, {grupo}, {sesion}, {fechas} (p. ej. "del lunes 18 al viernes 22 de enero").</p>
+            </details>
+            <div style="margin-top:12px"><button type="submit" id="tut-create">Publicar huecos</button></div>
+          </form>
+          <div id="tut-form-msg"></div>
+          <p class="muted">Los huecos aparecen en tu Google Calendar, en el calendario "Aula Online – Tutorías individuales", como "Tutoría libre". Cuando un alumno se apunta, el evento pasa a llamarse "Tutoría – Nombre", se crea su enlace de Google Meet y al alumno le llega la invitación a su correo y a su Google Calendar.</p>
+        </div>
+        <div class="card">
+          <div class="row" style="align-items:center"><h2 style="margin:0">Cuadrante de tutorías</h2>
+            <div class="shrink"><button class="secondary small" id="tut-reload">Actualizar</button></div></div>
+          <div id="tut-msg"></div>
+          <div id="tut-rondas" style="margin-top:10px"></div>
+          <div id="tut-grid" style="margin-top:10px"></div>
+        </div>
+      </div>
+
+      <!-- ================= CLASES GRUPALES ================= -->
+      <div data-panel="classes" class="hidden">
+        <div class="card">
+          <h2>Programar clase grupal</h2>
+          <form id="gc-form">
+            <div class="row">
+              <div style="flex-basis:300px"><label>Clase del folleto (rellena grupo y sesión)</label>
+                <select id="gc-preset"><option value="">— Elegir —</option></select></div>
+              <div style="flex-basis:300px"><label>Sesión (título de la clase)</label><input name="sesion" placeholder="Ej.: Sesión 1 · Elaboración de las unidades didácticas"></div>
+            </div>
+            <div class="row" style="margin-top:10px">
+              <div><label>Grupo</label><select name="grupoId" id="gc-group" required></select></div>
+              <div><label>Día</label><input type="date" name="fecha" required></div>
+              <div><label>Inicio</label><input type="time" name="inicio" value="09:30" required></div>
+              <div><label>Fin</label><input type="time" name="fin" value="12:30" required></div>
+            </div>
+            <p class="muted" id="gc-partes"></p>
+            <div><button type="submit" id="gc-create">Crear clase e invitar al grupo</button></div>
+          </form>
+          <div id="gc-msg"></div>
+          <div class="help" style="margin-top:12px">
+            Se crea en el calendario <b>Aula Online – Clases grupales</b> con su enlace de Google Meet, y cada alumno del grupo recibe la invitación por correo y en su Google Calendar.
+            Como Meet gratuito corta las llamadas de grupo cada hora, la clase se divide en partes con una pausa de 5 minutos antes de cada corte; tras la pausa, todos vuelven a entrar con <b>el mismo enlace</b>. Esto se explica en la invitación y en la web del alumno.
+            Si añades alumnos al grupo más tarde, se les invita automáticamente a las clases que aún no se han dado.
+          </div>
+        </div>
+        <div class="card">
+          <div class="row" style="align-items:center"><h2 style="margin:0">Próximas clases grupales</h2>
+            <div class="shrink"><button class="secondary small" id="classes-reload">Actualizar</button></div></div>
+          <div id="classes-list"></div>
+        </div>
+      </div>
+
+      <!-- ================= ENTREGAS ================= -->
+      <div data-panel="entregas" class="hidden">
+        <div class="card">
+          <div class="row" style="align-items:end">
+            <h2 style="margin:0">Trabajos de los alumnos</h2>
+            <div class="shrink"><label>Grupo</label><select id="ent-group"></select></div>
+            <div class="shrink"><label>Mostrar</label>
+              <select id="ent-estado"><option value="pendiente">Pendientes</option><option value="corregido">Corregidos</option><option value="">Todos</option></select></div>
+            <div class="shrink"><button class="secondary small" id="ent-reload">Actualizar</button></div>
+          </div>
+          <p class="muted">Abre el archivo del alumno, haz tus anotaciones (p. ej. con Vista Previa en el Mac o en el iPad), guárdalo y súbelo aquí como corrección.
+            Los archivos están en la carpeta privada de Drive <b>Aula Online – Entregas de alumnos</b>.</p>
+          <div id="ent-msg"></div>
+          <div id="ent-list"></div>
+        </div>
+      </div>
+
+      <!-- ================= CORREO ================= -->
+      <div data-panel="mail" class="hidden">
+        <div class="card">
+          <h2>Enviar correo a un grupo</h2>
+          <div id="mail-status"></div>
+          <form id="mail-form">
+            <div class="row">
+              <div><label>Grupo</label><select name="group" id="mail-group" required></select></div>
+              <div><label>Destinatarios</label>
+                <select id="mail-who"><option value="all">Todo el grupo</option><option value="some">Elegir alumnos…</option></select></div>
+            </div>
+            <div id="mail-students" class="list-check hidden" style="margin-top:10px"></div>
+            <div style="margin-top:10px"><label>Asunto</label><input name="subject" required value="Acceso a tu aula online – {grupo}"></div>
+            <div style="margin-top:10px"><label>Mensaje</label>
+              <textarea name="body" required>Hola {nombre}:
+
+Ya puedes acceder al aula online del grupo {grupo}.
+
+Entra en {enlace} con tu clave personal: {clave}
+
+Si al abrir el enlace ves «no se puede abrir el archivo», ábrelo en una ventana de incógnito o desde el móvil.
+
+Desde ahí verás tus clases grupales con su enlace de Meet, podrás apuntarte a tus tutorías individuales y consultar los documentos.
+
+Un saludo.</textarea></div>
+            <p class="muted">Variables: {nombre}, {clave}, {enlace} (la web), {grupo}, {meet} (enlace de Meet del grupo). Cada alumno recibe su propio correo.</p>
+            <label style="display:flex;gap:8px;align-items:center;color:var(--text)"><input type="checkbox" name="attach"> Adjuntar los documentos asignados al grupo</label>
+            <div style="margin-top:12px"><button type="submit" id="mail-send">Enviar</button></div>
+          </form>
+          <div id="mail-msg"></div>
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <script>
+  // Sustituye google.script.run: llama a la API de Apps Script sin enviar cookies de Google
+  (function () {
+    var API_URL = "https://script.google.com/macros/s/AKfycbzCzTXvFzifJzwUmAg0AARtRtbNrsA20tEn4h8JzotOZmVOOu-0jGwHTJDa2xrLTQeQ/exec";
+    function make(ok, fail) {
+      return new Proxy({}, { get: function (_, fn) {
+        if (fn === 'withSuccessHandler') return function (f) { return make(f, fail); };
+        if (fn === 'withFailureHandler') return function (f) { return make(ok, f); };
+        return function () {
+          var args = Array.prototype.slice.call(arguments);
+          fetch(API_URL, {
+            method: 'POST', credentials: 'omit', redirect: 'follow',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ fn: fn, args: args }),
+          })
+            .then(function (r) { return r.json(); })
+            .then(function (d) { if (d.error != null) { fail && fail(new Error(d.error)); } else { ok && ok(d.result); } })
+            .catch(function () { fail && fail(new Error('No se ha podido conectar. Revisa tu conexión a internet y vuelve a intentarlo.')); });
+        };
+      } });
+    }
+    window.google = { script: { run: make(null, null) } };
+  })();
+</script><script>
+  const TZ = 'Europe/Madrid';
+
+  function call(fn, ...args) {
+    return new Promise((resolve, reject) => {
+      google.script.run
+        .withSuccessHandler(resolve)
+        .withFailureHandler((e) => reject(new Error(String((e && e.message) || e).replace(/^(Exception|Error):\s*/, ''))))[fn](...args);
+    });
+  }
+
+  // localStorage con respaldo en memoria (algunos navegadores lo bloquean)
+  const memory = {};
+  const store = {
+    get(k) {
+      try { const v = localStorage.getItem(k); if (v != null) return v; } catch (e) {}
+      return memory[k] == null ? null : memory[k];
+    },
+    set(k, v) {
+      if (v == null) delete memory[k]; else memory[k] = v;
+      try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {}
+    },
+  };
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  const $ = (sel, root = document) => root.querySelector(sel);
+
+  function flash(el, text, ok = true) {
+    el.innerHTML = `<div class="msg ${ok ? 'ok' : 'err'}">${esc(text)}</div>`;
+    if (ok) setTimeout(() => { el.innerHTML = ''; }, 6000);
+  }
+
+  function dayKey(iso) { return new Date(iso).toLocaleDateString('sv-SE', { timeZone: TZ }); }
+  function fmtTime(iso) { return new Date(iso).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', timeZone: TZ }); }
+  function fmtDay(iso) {
+    const s = new Date(iso).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', timeZone: TZ });
+    return s[0].toUpperCase() + s.slice(1);
+  }
+
+  // Partes de una clase larga: Meet gratuito corta cada hora → pausa de 5 min antes de cada corte
+  // ini y fin en formato "HH:MM"
+  function partes(ini, fin) {
+    const toMin = (t) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 5));
+    const toStr = (m) => String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
+    const s = toMin(ini), e = toMin(fin);
+    const out = [];
+    for (let t = s; t < e; t += 60) out.push([toStr(t), toStr(t + 60 >= e ? e : t + 55)]);
+    return out;
+  }
+
+  function groupByDay(list) {
+    const days = new Map();
+    for (const x of list) {
+      const k = dayKey(x.inicio);
+      if (!days.has(k)) days.set(k, []);
+      days.get(k).push(x);
+    }
+    return days;
+  }
+</script>
+
+  <script>
+    let info, currentGroup = null;
+    const token = () => store.get('aula_admin');
+
+    // Enlaces a Drive, Hojas y Calendar: se abren con la cuenta del aula aunque haya otras abiertas
+    function gUrl(url) {
+      if (!url || !info || !info.cuenta) return url || '';
+      try {
+        const u = new URL(url);
+        if (!/google\.com$/.test(u.hostname)) return url;
+        u.searchParams.set('authuser', info.cuenta);
+        return u.toString();
+      } catch (e) { return url; }
+    }
+
+    // Llama al servidor con el token; si la sesión caducó, vuelve al login
+    async function adm(fn, ...args) {
+      try {
+        return await call(fn, token(), ...args);
+      } catch (err) {
+        if (err.message === 'SESION') { store.set('aula_admin', null); showLogin(); }
+        throw err;
+      }
+    }
+
+    function showLogin() {
+      $('#boot').classList.add('hidden');
+      $('#app').classList.add('hidden');
+      $('#login').classList.remove('hidden');
+    }
+
+    $('#login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      $('#login-btn').disabled = true;
+      try {
+        store.set('aula_admin', await call('adminLogin', $('#password').value));
+        $('#password').value = '';
+        $('#login').classList.add('hidden');
+        $('#boot').classList.remove('hidden');
+        await start();
+      } catch (err) { flash($('#login-msg'), err.message, false); }
+      $('#login-btn').disabled = false;
+    });
+
+    $('#logout').addEventListener('click', () => { store.set('aula_admin', null); showLogin(); });
+
+    async function start() {
+      if (!token()) return showLogin();
+      await loadInfo();
+      loadEntregas(); // para el contador de pendientes de la pestaña
+      $('#boot').classList.add('hidden');
+      $('#app').classList.remove('hidden');
+    }
+
+    function showTab(tab) {
+      document.querySelectorAll('nav.tabs button').forEach((b) => b.classList.toggle('active', b.dataset.tab === tab));
+      document.querySelectorAll('[data-panel]').forEach((p) => p.classList.toggle('hidden', p.dataset.panel !== tab));
+      if ((tab === 'classes' || tab === 'tutorias') && !cal) loadCalendars();
+      if (tab === 'entregas') loadEntregas();
+    }
+    document.querySelectorAll('nav.tabs button').forEach((b) => b.addEventListener('click', () => showTab(b.dataset.tab)));
+
+    // ---------- General y grupos ----------
+    async function loadInfo() {
+      info = await adm('adminData');
+      $('#lnk-drive').href = gUrl(info.carpetaUrl);
+      $('#lnk-sheet').href = gUrl(info.hojaUrl);
+      $('#lnk-cal').href = gUrl('https://calendar.google.com/calendar/r');
+      $('#lnk-web').href = info.webUrl;
+      $('#groups-list').innerHTML = info.grupos.map((g) => `
+        <tr><td><b>${esc(g.nombre)}</b>${g.meet ? '' : '<div class="muted">⚠ sin enlace de Meet</div>'}</td><td>${g.alumnos}</td><td>${g.documentos}</td>
+        <td style="text-align:right"><button class="small secondary" data-open="${esc(g.id)}">Gestionar</button>
+        <button class="small danger" data-del="${esc(g.id)}">Borrar</button></td></tr>`).join('')
+        || '<tr><td colspan="4" class="muted">Aún no hay grupos.</td></tr>';
+      fillPresets();
+      const eg = $('#ent-group').value;
+      $('#ent-group').innerHTML = '<option value="">Todos</option>' + info.grupos.map((g) => `<option value="${esc(g.id)}">${esc(g.nombre)}</option>`).join('');
+      $('#ent-group').value = eg;
+      $('#gc-group').innerHTML = info.grupos.map((g) => `<option value="${esc(g.id)}">${esc(g.nombre)}</option>`).join('');
+      $('#tut-group').innerHTML = '<option value="">Todos los grupos</option>' +
+        info.grupos.map((g) => `<option value="${esc(g.id)}">${esc(g.nombre)}</option>`).join('');
+      const sel = $('#mail-group').value;
+      $('#mail-group').innerHTML = '<option value="">— Elige grupo —</option>' +
+        info.grupos.map((g) => `<option value="${esc(g.id)}">${esc(g.nombre)}</option>`).join('');
+      $('#mail-group').value = sel;
+      $('#mail-status').innerHTML = `<p class="muted">Se envía desde <b>${esc(info.cuenta)}</b>. Correos que puedes enviar hoy: <b>${info.cuotaCorreo}</b>.</p>`;
+    }
+
+    $('#group-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        const id = await adm('adminSaveGroup', { nombre: e.target.nombre.value, meet: e.target.meet.value, maxReservas: e.target.maxReservas.value });
+        e.target.reset();
+        await loadInfo();
+        openGroup(id);
+      } catch (err) { flash($('#group-form-msg'), err.message, false); }
+    });
+
+    $('#groups-list').addEventListener('click', async (e) => {
+      const { open, del } = e.target.dataset;
+      if (open) openGroup(open);
+      if (del && confirm('¿Borrar el grupo y sus alumnos? (Las reservas ya hechas en Calendar se mantienen.)')) {
+        await adm('adminDeleteGroup', del);
+        if (currentGroup && currentGroup.id === del) $('#group-detail').classList.add('hidden');
+        loadInfo();
+      }
+    });
+
+    async function openGroup(id) {
+      $('#group-detail').classList.remove('hidden');
+      $('#gd-title').textContent = 'Cargando…';
+      currentGroup = await adm('adminGroup', id);
+      const g = currentGroup;
+      $('#gd-title').textContent = g.nombre;
+      $('#gd-form').nombre.value = g.nombre;
+      $('#gd-form').meet.value = g.meet || '';
+      $('#gd-form').maxReservas.value = g.maxReservas || '';
+      $('#students-list').innerHTML = g.alumnos.map((s) => `
+        <tr><td>${esc(s.nombre)}</td><td>${esc(s.email)}</td><td class="code">${esc(s.clave)}</td>
+        <td style="text-align:right"><button class="small secondary" data-regen="${esc(s.id)}">Nueva clave</button>
+        <button class="small danger" data-sdel="${esc(s.id)}">Quitar</button></td></tr>`).join('')
+        || '<tr><td colspan="4" class="muted">Sin alumnos. Importa un Excel o añádelos a mano.</td></tr>';
+      $('#gd-docs').innerHTML = g.biblioteca.map((d) => `
+        <label><input type="checkbox" value="${esc(d.id)}" ${g.docIds.includes(d.id) ? 'checked' : ''}>
+        ${esc(d.nombre)} <a href="${esc(gUrl(d.url))}" target="_blank" rel="noopener" class="muted">abrir</a></label>`).join('')
+        || '<p class="muted">La carpeta de Drive está vacía. Sube ahí tus documentos y vuelve a abrir el grupo.</p>';
+      $('#group-detail').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    $('#gd-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        await adm('adminSaveGroup', { id: currentGroup.id, nombre: e.target.nombre.value, meet: e.target.meet.value, maxReservas: e.target.maxReservas.value });
+        flash($('#gd-msg'), 'Guardado');
+        await loadInfo();
+        openGroup(currentGroup.id);
+      } catch (err) { flash($('#gd-msg'), err.message, false); }
+    });
+
+    async function readSpreadsheet(file) {
+      const wb = XLSX.read(await file.arrayBuffer());
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      return XLSX.utils.sheet_to_json(ws, { header: 1, defval: '', raw: false });
+    }
+
+    $('#import-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const f = e.target;
+      if (f.mode.value === 'replace' && !confirm('Se borrarán los alumnos actuales del grupo. ¿Seguir?')) return;
+      flash($('#import-msg'), 'Importando…');
+      try {
+        const rows = await readSpreadsheet(f.file.files[0]);
+        const r = await adm('adminImport', currentGroup.id, rows, f.mode.value);
+        let text = `Importados: ${r.nuevos} nuevos, ${r.actualizados} actualizados.` + (r.invitados ? ` Invitados a las clases grupales: ${r.invitados}.` : '');
+        if (r.errores.length) text += ' Avisos: ' + r.errores.join(' · ');
+        flash($('#import-msg'), text, !r.errores.length);
+        f.reset();
+        await loadInfo();
+        openGroup(currentGroup.id);
+      } catch (err) { flash($('#import-msg'), err.message, false); }
+    });
+
+    $('#student-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        await adm('adminAddStudent', currentGroup.id, e.target.nombre.value, e.target.email.value);
+        e.target.reset();
+        await loadInfo();
+        openGroup(currentGroup.id);
+      } catch (err) { alert(err.message); }
+    });
+
+    $('#students-list').addEventListener('click', async (e) => {
+      const { regen, sdel } = e.target.dataset;
+      if (regen && confirm('¿Generar una clave nueva? La anterior dejará de funcionar.')) await adm('adminRegenerate', regen);
+      else if (sdel && confirm('¿Quitar este alumno del grupo?')) await adm('adminRemoveStudent', sdel);
+      else return;
+      await loadInfo();
+      openGroup(currentGroup.id);
+    });
+
+    $('#gd-docs-save').addEventListener('click', async (e) => {
+      const ids = [...document.querySelectorAll('#gd-docs input:checked')].map((i) => i.value);
+      e.target.disabled = true;
+      try {
+        await adm('adminSetGroupDocs', currentGroup.id, ids);
+        currentGroup.docIds = ids;
+        flash($('#gd-docs-msg'), 'Documentos del grupo actualizados');
+        loadInfo();
+      } catch (err) { flash($('#gd-docs-msg'), err.message, false); }
+      e.target.disabled = false;
+    });
+
+    $('#gd-mail').addEventListener('click', () => {
+      $('#mail-group').value = currentGroup.id;
+      loadMailStudents();
+      showTab('mail');
+    });
+
+    // ---------- Clases grupales y tutorías ----------
+    let cal = null;
+    async function loadCalendars() {
+      $('#classes-list').innerHTML = $('#tut-grid').innerHTML = '<p class="loading">Leyendo Google Calendar…</p>';
+      try {
+        cal = await adm('adminClasses');
+        renderClasses();
+        renderTutorias();
+      } catch (err) { flash($('#classes-list'), err.message, false); }
+    }
+
+    function renderClasses() {
+      if (!cal.grupales.length) { $('#classes-list').innerHTML = '<p class="muted">No hay clases en el calendario "Aula Online – Clases grupales".</p>'; return; }
+      let html = '';
+      for (const [, day] of groupByDay(cal.grupales)) {
+        html += `<div class="day-title">${fmtDay(day[0].inicio)}</div>`;
+        for (const c of day) {
+          html += `<div class="slot"><span class="time">${fmtTime(c.inicio)}–${fmtTime(c.fin)}</span>
+            <span class="info">${esc(c.titulo)} · <span class="muted">${esc(c.grupos.join(', ') || 'Todos los grupos')}</span>
+              <div class="muted">${c.invitados} invitados${c.meet ? ` · <a href="${esc(c.meet)}" target="_blank" rel="noopener">${esc(c.meet)}</a>` : ''}</div></span>
+            <button class="small danger" data-gcdel="${esc(c.id)}">Borrar</button></div>`;
+        }
+      }
+      $('#classes-list').innerHTML = html;
+    }
+
+    function renderRondas() {
+      $('#tut-rondas').innerHTML = cal.rondas.map((r, i) => {
+        const total = r.pendientes.length + 0;
+        return `<div class="slot"><span class="info"><b>${esc(r.sesion || 'Tutorías sin sesión')}</b> · ${esc(r.gruposNombre.join(', ') || 'Todos los grupos')}
+            <div class="muted">${esc(r.fechas)} · ${r.libres} de ${r.huecos} huecos libres</div>
+            <div class="muted">${total ? 'Falta por apuntarse: ' + r.pendientes.map(esc).join(', ') : '✓ Se han apuntado todos'}</div></span>
+          ${total ? `<button class="small secondary" data-remind="${i}">Recordar a ${total === 1 ? '1 alumno' : total + ' alumnos'}</button>` : ''}</div>`;
+      }).join('');
+    }
+
+    $('#tut-rondas').addEventListener('click', async (e) => {
+      const r = cal.rondas[e.target.dataset.remind];
+      if (!r) return;
+      if (!confirm(`¿Enviar un recordatorio a: ${r.pendientes.join(', ')}?`)) return;
+      e.target.disabled = true;
+      const f = $('#tut-form');
+      try {
+        const res = await adm('adminRemindTutoria', r.sesion, r.grupos, f.recAsunto.value, f.recMensaje.value);
+        flash($('#tut-msg'), `Recordatorio enviado a ${res.enviados} alumno(s).` + (res.fallidos.length ? ' Fallaron: ' + res.fallidos.join(', ') : ''), !res.fallidos.length);
+        loadInfo();
+      } catch (err) { flash($('#tut-msg'), err.message, false); }
+      e.target.disabled = false;
+    });
+
+    function renderTutorias() {
+      renderRondas();
+      if (!cal.tutorias.length) { $('#tut-grid').innerHTML = '<p class="muted">No hay huecos de tutoría publicados.</p>'; return; }
+      const range = (x) => `${fmtTime(x.inicio)}/${fmtTime(x.fin)}`;
+      const weeks = new Map();
+      for (const t of cal.tutorias) {
+        const d = new Date(dayKey(t.inicio) + 'T12:00:00Z');
+        d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7));
+        const k = d.toISOString().slice(0, 10);
+        if (!weeks.has(k)) weeks.set(k, []);
+        weeks.get(k).push(t);
+      }
+      let html = '';
+      for (const [monday, list] of weeks) {
+        const days = [...new Set(list.map((t) => dayKey(t.inicio)))].sort();
+        const rows = [...new Set(list.map(range))].sort();
+        const libres = list.filter((t) => !t.asistentes.length).map((t) => t.id);
+        const sesiones = [...new Set(list.map((t) => t.sesion).filter(Boolean))].join(' / ');
+        html += `<div class="week"><div class="row" style="align-items:center"><div class="week-title">Semana del ${new Date(monday + 'T12:00:00Z').toLocaleDateString('es-ES', { day: 'numeric', month: 'long', timeZone: 'UTC' })}${sesiones ? ' · ' + esc(sesiones) : ''}</div>
+          ${libres.length ? `<div class="shrink"><button class="danger small" data-delweek="${libres.join(',')}">Borrar huecos libres de esta semana</button></div>` : ''}</div>
+          <div class="table-wrap"><table class="grid"><thead><tr><th></th>`;
+        for (const d of days) {
+          const date = new Date(d + 'T12:00:00Z');
+          html += `<th>${date.toLocaleDateString('es-ES', { weekday: 'long', timeZone: 'UTC' }).toUpperCase()}<small>${date.toLocaleDateString('es-ES', { day: 'numeric', month: 'numeric', timeZone: 'UTC' })}</small></th>`;
+        }
+        html += '</tr></thead><tbody>';
+        for (const r of rows) {
+          html += `<tr><td class="hora">${r}</td>`;
+          for (const d of days) {
+            const t = list.find((x) => dayKey(x.inicio) === d && range(x) === r);
+            if (!t) html += '<td class="vacio"></td>';
+            else if (t.asistentes.length) html += `<td class="mia" title="${esc(t.grupos.join(', '))}">${t.asistentes.map(esc).join('<br>')}</td>`;
+            else html += `<td title="${esc(t.grupos.join(', ') || 'Todos los grupos')}"><span class="muted">libre</span> <button class="small danger" data-del="${esc(t.id)}" title="Borrar hueco">×</button></td>`;
+          }
+          html += '</tr>';
+        }
+        html += '</tbody></table></div></div>';
+      }
+      $('#tut-grid').innerHTML = html;
+    }
+
+    $('#tut-grid').addEventListener('click', async (e) => {
+      const ids = e.target.dataset.del ? [e.target.dataset.del] : e.target.dataset.delweek ? e.target.dataset.delweek.split(',') : null;
+      if (!ids || !confirm(ids.length > 1 ? `¿Borrar ${ids.length} huecos libres?` : '¿Borrar este hueco?')) return;
+      e.target.disabled = true;
+      try {
+        await adm('adminDeleteTutorias', ids);
+        loadCalendars();
+      } catch (err) { flash($('#tut-msg'), err.message, false); }
+    });
+
+    $('#tut-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const f = e.target;
+      $('#tut-create').disabled = true;
+      if (f.avisar.checked) {
+        const g = info.grupos.find((x) => x.id === f.grupoId.value);
+        const n = g ? g.alumnos : info.grupos.reduce((a, x) => a + x.alumnos, 0);
+        if (!confirm(`Se publicarán los huecos y se avisará por correo a ${n} alumno(s)${g ? ' de "' + g.nombre + '"' : ' de todos los grupos'}. ¿Seguir?`)) { $('#tut-create').disabled = false; return; }
+      }
+      flash($('#tut-form-msg'), 'Creando huecos en Google Calendar… (puede tardar un poco)');
+      try {
+        const r = await adm('adminCreateTutorias', {
+          desde: f.desde.value, hasta: f.hasta.value, grupoId: f.grupoId.value, franjas: f.franjas.value,
+          sesion: f.sesion.value, avisar: f.avisar.checked, asunto: f.asunto.value, mensaje: f.mensaje.value,
+          dias: [...f.querySelectorAll('input[name=dia]:checked')].map((i) => Number(i.value)),
+        });
+        let msg = `Publicados ${r.creadas} huecos.` + (r.repetidas ? ` ${r.repetidas} ya existían y no se han duplicado.` : '');
+        if (r.aviso) msg += ` Aviso enviado a ${r.aviso.enviados} alumno(s).` + (r.aviso.fallidos.length ? ' Fallaron: ' + r.aviso.fallidos.join(', ') : '');
+        else if (f.avisar.checked && !r.creadas) msg += ' No se ha enviado aviso porque no había huecos nuevos.';
+        flash($('#tut-form-msg'), msg, !(r.aviso && r.aviso.fallidos.length));
+        loadInfo();
+        loadCalendars();
+      } catch (err) { flash($('#tut-form-msg'), err.message, false); }
+      $('#tut-create').disabled = false;
+    });
+
+    // Tutorías del folleto: rellena sesión y semana (lunes a viernes)
+    // Desplegables "del folleto", agrupados por formación (vienen de FORMACIONES en Code.gs)
+    function fillPresets() {
+      const fmt = (d) => new Date(d + 'T12:00:00Z').toLocaleDateString('es-ES', { day: 'numeric', month: 'short', timeZone: 'UTC' });
+      const build = (kind) => '<option value="">— Elegir —</option>' + info.formaciones.map((f, i) =>
+        `<optgroup label="${esc(f.grupo)}">` + f[kind].map((p, j) =>
+          `<option value="${i}|${j}">${esc(p.sesion)} (${fmt(p.desde)} – ${fmt(p.hasta)})</option>`).join('') + '</optgroup>').join('');
+      $('#tut-preset').innerHTML = build('tutorias');
+      $('#gc-preset').innerHTML = build('grupales');
+    }
+    const preset = (kind, value) => {
+      const [i, j] = value.split('|').map(Number);
+      return { f: info.formaciones[i], p: info.formaciones[i][kind][j] };
+    };
+
+    $('#tut-preset').addEventListener('change', (e) => {
+      if (!e.target.value) return;
+      const { f: fo, p } = preset('tutorias', e.target.value);
+      const f = $('#tut-form');
+      f.sesion.value = p.sesion;
+      f.desde.value = p.desde;
+      f.hasta.value = p.hasta;
+      if (fo.grupoId) f.grupoId.value = fo.grupoId;
+    });
+
+    // ---- Crear clase grupal
+    function updatePartes() {
+      const f = $('#gc-form');
+      if (!f.inicio.value || !f.fin.value || f.fin.value <= f.inicio.value) { $('#gc-partes').textContent = ''; return; }
+      const p = partes(f.inicio.value, f.fin.value);
+      $('#gc-partes').textContent = p.length > 1 ? `Se hará en ${p.length} partes: ` + p.map((x) => x.join('–')).join(' · pausa · ') : '';
+    }
+    ['inicio', 'fin'].forEach((n) => $('#gc-form')[n].addEventListener('input', updatePartes));
+    updatePartes();
+
+    $('#gc-preset').addEventListener('change', (e) => {
+      if (!e.target.value) return;
+      const { f: fo, p } = preset('grupales', e.target.value);
+      const f = $('#gc-form');
+      f.sesion.value = p.sesion;
+      f.fecha.value = p.desde; // cámbialo por el día concreto de esa semana
+      f.fecha.min = p.desde;
+      f.fecha.max = p.hasta;
+      if (fo.grupoId) f.grupoId.value = fo.grupoId;
+      f.fecha.focus();
+    });
+
+    $('#gc-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const f = e.target;
+      const g = info.grupos.find((x) => x.id === f.grupoId.value);
+      if (!confirm(`Se creará la clase el ${fmtDay(f.fecha.value + 'T12:00:00Z')} de ${f.inicio.value} a ${f.fin.value} y se enviará la invitación a los ${g.alumnos} alumnos de "${g.nombre}". ¿Seguir?`)) return;
+      $('#gc-create').disabled = true;
+      try {
+        const r = await adm('adminCreateGroupClass', { grupoId: f.grupoId.value, fecha: f.fecha.value, inicio: f.inicio.value, fin: f.fin.value, sesion: f.sesion.value });
+        flash($('#gc-msg'), `Clase creada con su Google Meet. Invitación enviada a ${r.invitados} alumno(s).`);
+        f.sesion.value = ''; f.fecha.value = ''; $('#gc-preset').value = '';
+        loadCalendars();
+      } catch (err) { flash($('#gc-msg'), err.message, false); }
+      $('#gc-create').disabled = false;
+    });
+
+    $('#classes-list').addEventListener('click', async (e) => {
+      const id = e.target.dataset.gcdel;
+      if (!id || !confirm('¿Borrar esta clase? A los alumnos les llegará la cancelación.')) return;
+      e.target.disabled = true;
+      try { await adm('adminDeleteGroupClass', id); loadCalendars(); }
+      catch (err) { alert(err.message); }
+    });
+
+    $('#classes-reload').addEventListener('click', loadCalendars);
+    $('#tut-reload').addEventListener('click', loadCalendars);
+
+    // ---------- Entregas ----------
+    let entregas = [];
+    async function loadEntregas() {
+      $('#ent-list').innerHTML = '<p class="loading">Cargando…</p>';
+      try {
+        entregas = await adm('adminEntregas');
+        renderEntregas();
+      } catch (err) { flash($('#ent-list'), err.message, false); }
+    }
+
+    function renderEntregas() {
+      const pend = entregas.filter((e) => e.estado === 'pendiente').length;
+      $('#ent-count').textContent = pend;
+      $('#ent-count').classList.toggle('hidden', !pend);
+      const g = $('#ent-group').value, est = $('#ent-estado').value;
+      const list = entregas.filter((e) => (!g || e.grupoId === g) && (!est || e.estado === est));
+      const fecha = (f) => f ? fmtDay(f.slice(0, 10) + 'T12:00:00Z') + ', ' + f.slice(11, 16) : '';
+      $('#ent-list').innerHTML = list.map((e) => `
+        <div class="card" style="margin:10px 0">
+          <div class="row" style="align-items:center">
+            <div><b>${esc(e.titulo)}</b> · ${esc(e.alumno)} <span class="muted">(${esc(e.grupo)})</span>
+              <div class="muted">Enviado el ${esc(fecha(e.fecha))} · <a href="${esc(gUrl(e.url))}" target="_blank" rel="noopener">📄 ${esc(e.nombreArchivo)}</a></div></div>
+            <div class="shrink">${e.estado === 'corregido' ? '<span class="pill ok">✓ Corregido</span>' : '<span class="pill full">Pendiente</span>'}</div>
+          </div>
+          ${e.estado === 'corregido' ? `
+            <p class="muted" style="margin-top:8px">Devuelto el ${esc(fecha(e.fechaCorreccion))}
+              ${e.correccionUrl ? ` · <a href="${esc(gUrl(e.correccionUrl))}" target="_blank" rel="noopener">📄 ${esc(e.correccionNombre)}</a>` : ''}</p>
+            ${e.comentario ? `<div class="msg" style="background:#eef3fd;color:#1d3f8f;white-space:pre-wrap">${esc(e.comentario)}</div>` : ''}
+            <details><summary class="muted" style="cursor:pointer">Volver a enviar otra corrección</summary>${correctionForm(e)}</details>`
+          : correctionForm(e)}
+        </div>`).join('') || '<p class="muted">No hay trabajos en esta vista.</p>';
+    }
+
+    function correctionForm(e) {
+      return `<form class="ent-form" data-id="${esc(e.id)}" style="margin-top:10px">
+        <div class="row">
+          <div style="flex-basis:240px"><label>Archivo corregido (PDF anotado…)</label><input type="file" name="archivo"></div>
+        </div>
+        <div style="margin-top:8px"><label>Comentario para ${esc(e.alumno)}</label><textarea name="comentario" style="min-height:80px">${esc(e.comentario || '')}</textarea></div>
+        <label style="display:flex;gap:8px;align-items:center;color:var(--text);margin-top:6px"><input type="checkbox" name="enviar" checked> Enviárselo por correo (con el archivo adjunto)</label>
+        <div style="margin-top:8px"><button type="submit">Devolver corregido</button></div>
+      </form>`;
+    }
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(String(r.result).split(',')[1] || '');
+        r.onerror = () => reject(new Error('No se pudo leer el archivo'));
+        r.readAsDataURL(file);
+      });
+    }
+
+    $('#ent-list').addEventListener('submit', async (ev) => {
+      if (!ev.target.classList.contains('ent-form')) return;
+      ev.preventDefault();
+      const f = ev.target;
+      const file = f.archivo.files[0];
+      if (file && file.size > 20 * 1024 * 1024) return flash($('#ent-msg'), 'El archivo supera los 20 MB', false);
+      const btn = f.querySelector('button');
+      btn.disabled = true;
+      btn.textContent = 'Enviando…';
+      try {
+        const archivo = file ? { nombre: file.name, mime: file.type || 'application/octet-stream', base64: await fileToBase64(file) } : null;
+        const r = await adm('adminCorregir', f.dataset.id, archivo, f.comentario.value, f.enviar.checked);
+        flash($('#ent-msg'), 'Corrección guardada' + (r.correo ? (r.correo.enviados ? ' y enviada por correo al alumno.' : '. No se pudo enviar el correo: ' + r.correo.fallidos.join(', ')) : '.'), !(r.correo && !r.correo.enviados));
+        await loadEntregas();
+        loadInfo();
+      } catch (err) {
+        flash($('#ent-msg'), err.message, false);
+        btn.disabled = false;
+        btn.textContent = 'Devolver corregido';
+      }
+    });
+
+    ['ent-group', 'ent-estado'].forEach((id) => $('#' + id).addEventListener('change', renderEntregas));
+    $('#ent-reload').addEventListener('click', loadEntregas);
+
+    // ---------- Correo ----------
+    async function loadMailStudents() {
+      const id = $('#mail-group').value;
+      if (!id) { $('#mail-students').innerHTML = ''; return; }
+      $('#mail-students').innerHTML = '<p class="loading">Cargando…</p>';
+      const g = await adm('adminGroup', id);
+      $('#mail-students').innerHTML = g.alumnos.map((s) => `
+        <label><input type="checkbox" value="${esc(s.id)}" checked> ${esc(s.nombre)} <span class="muted">${esc(s.email)}</span></label>`).join('')
+        || '<p class="muted">Este grupo no tiene alumnos.</p>';
+    }
+    $('#mail-group').addEventListener('change', loadMailStudents);
+    $('#mail-who').addEventListener('change', (e) => $('#mail-students').classList.toggle('hidden', e.target.value !== 'some'));
+
+    $('#mail-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const f = e.target;
+      const group = info.grupos.find((g) => g.id === f.group.value);
+      const some = $('#mail-who').value === 'some';
+      const studentIds = some ? [...document.querySelectorAll('#mail-students input:checked')].map((i) => i.value) : [];
+      if (some && !studentIds.length) return alert('Elige al menos un alumno');
+      if (!confirm(`¿Enviar el correo a ${studentIds.length || group.alumnos} alumno(s) de "${group.nombre}"?`)) return;
+      $('#mail-send').disabled = true;
+      $('#mail-msg').innerHTML = '<p class="loading">Enviando…</p>';
+      try {
+        const r = await adm('adminSendEmail', group.id, studentIds, f.subject.value, f.body.value, f.attach.checked);
+        let text = `Enviados: ${r.enviados}.`;
+        if (r.fallidos.length) text += ' Fallaron: ' + r.fallidos.join(', ');
+        flash($('#mail-msg'), text, !r.fallidos.length);
+        loadInfo();
+      } catch (err) { flash($('#mail-msg'), err.message, false); }
+      $('#mail-send').disabled = false;
+    });
+
+    start().catch((err) => { if (err.message !== 'SESION') $('#boot').textContent = 'Error: ' + err.message; });
+  </script>
+</body>
+</html>
