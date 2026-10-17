@@ -279,8 +279,6 @@ Ya están publicados los horarios de la tutoría individual «{sesion}», {fecha
 
 Entra en {enlace} con tu clave {clave} y apúntate en el hueco que prefieras. Al reservarlo te llegará la invitación de Google Calendar con el enlace de Google Meet.
 
-Si al abrir el enlace ves «no se puede abrir el archivo», ábrelo en una ventana de incógnito o desde el móvil.
-
 Los huecos se asignan por orden de reserva.
 
 Un saludo.</textarea></div>
@@ -290,8 +288,6 @@ Un saludo.</textarea></div>
 Todavía no te has apuntado a la tutoría individual «{sesion}». Quedan huecos libres {fechas}.
 
 Entra en {enlace} con tu clave {clave} y elige el que prefieras.
-
-Si al abrir el enlace ves «no se puede abrir el archivo», ábrelo en una ventana de incógnito o desde el móvil.
 
 Un saludo.</textarea></div>
               <p class="muted">Variables: {nombre}, {clave}, {enlace}, {grupo}, {sesion}, {fechas} (p. ej. "del lunes 18 al viernes 22 de enero").</p>
@@ -379,8 +375,6 @@ Un saludo.</textarea></div>
 Ya puedes acceder al aula online del grupo {grupo}.
 
 Entra en {enlace} con tu clave personal: {clave}
-
-Si al abrir el enlace ves «no se puede abrir el archivo», ábrelo en una ventana de incógnito o desde el móvil.
 
 Desde ahí verás tus clases grupales con su enlace de Meet, podrás apuntarte a tus tutorías individuales y consultar los documentos.
 
@@ -762,7 +756,9 @@ Un saludo.</textarea></div>
           for (const d of days) {
             const t = list.find((x) => dayKey(x.inicio) === d && range(x) === r);
             if (!t) html += '<td class="vacio"></td>';
-            else if (t.asistentes.length) html += `<td class="mia" title="${esc(t.grupos.join(', '))}">${t.asistentes.map(esc).join('<br>')}</td>`;
+            else if (t.asistentes.length) html += `<td class="mia" title="${esc(t.grupos.join(', '))}">${t.meet
+              ? `<a href="${esc(gUrl(t.meet))}" target="_blank" rel="noopener" style="color:inherit" title="Entrar en la reunión de Meet">${t.asistentes.map(esc).join('<br>')}<br><span class="pill ok">🎥 Entrar en Meet</span></a>`
+              : t.asistentes.map(esc).join('<br>')}</td>`;
             else html += `<td title="${esc(t.grupos.join(', ') || 'Todos los grupos')}"><span class="muted">libre</span> <button class="small danger" data-del="${esc(t.id)}" title="Borrar hueco">×</button></td>`;
           }
           html += '</tr>';
