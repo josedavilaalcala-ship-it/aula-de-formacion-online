@@ -166,8 +166,8 @@ table.grid td.mia button { margin-top: 4px; }
           <div id="meet"></div>
         </div>
         <div class="card">
-          <h2>Clases grupales</h2>
-          <div id="group-classes"></div>
+          <h2>Próxima tutoría individual</h2>
+          <div id="next-tut"></div>
         </div>
       </div>
 
@@ -410,23 +410,35 @@ table.grid td.mia button { margin-top: 4px; }
           ? `<p>Google Meet: ${link(state.grupo.meet)}</p>`
           : '<p class="muted">Todavía no hay clases grupales programadas.</p>';
       }
-      const mt = mineList()[0];
-      if (mt) $('#meet').innerHTML += `<div class="msg ok">Tu tutoría individual: <b>${fmtDay(mt.inicio)}, ${range(mt)}</b></div>`;
+      // Siguientes clases grupales (después de la próxima)
+      const later = state.clases.slice(1, 4);
+      if (later.length) {
+        $('#meet').innerHTML += `<p class="muted" style="margin:12px 0 4px">Después:</p>` + later.map((c) =>
+          `<div class="muted" style="font-size:14px">• ${fmtDay(c.inicio)}, ${range(c)}</div>`).join('');
+      }
+      if (next) $('#meet').innerHTML += '<p class="muted" style="margin-top:10px">📩 Cada clase te llega como invitación a tu correo y a tu Google Calendar.</p>';
 
-      $('#group-classes').innerHTML = state.clases.length
-        ? state.clases.slice(0, 8).map((c) => `<div class="slot"><span class="time">${fmtDay(c.inicio)}</span>
-            <span class="info">${range(c)}<div class="muted">${esc(c.titulo)}</div>
-            ${c.meet ? `<div class="muted"><a href="${esc(c.meet)}" target="_blank" rel="noopener">Enlace de Meet</a></div>` : ''}</span></div>`).join('')
-          + '<p class="muted">Recibes cada clase como invitación en tu correo y en tu Google Calendar.</p>'
-        : '<p class="muted">No hay clases grupales programadas.</p>';
+      // Próxima tutoría individual: la reservada, o un aviso si hay huecos para elegir
+      const myNext = mineList()[0];
+      const pending = [...new Set(state.tutorias.filter((t) => t.estado === 'libre' && !full(t.sesion)).map((t) => t.sesion || ''))];
+      if (myNext) {
+        $('#next-tut').innerHTML = `<p><b>${fmtDay(myNext.inicio)}, ${range(myNext)}</b>${myNext.sesion ? '<br>' + esc(myNext.sesion) : ''}</p>
+          ${myNext.meet ? `<p>Google Meet: ${link(myNext.meet)}</p>` : ''}
+          <p class="muted">📩 La invitación con el enlace de Meet está en tu correo (${esc(state.alumno.email)}) y en tu Google Calendar.</p>
+          ${state.grupo.nota ? `<div class="msg" style="background:#fff7e0;color:#7a5a00">📎 ${esc(state.grupo.nota)}</div>` : ''}`;
+      } else if (pending.length) {
+        $('#next-tut').innerHTML = `<p>Todavía no has elegido tu tutoría${pending[0] ? ' «' + esc(pending[0]) + '»' : ''}.</p>
+          <p><button id="go-tut">Elegir hueco ↓</button></p>`;
+        $('#go-tut').addEventListener('click', () => $('#tutorias').scrollIntoView({ behavior: 'smooth' }));
+      } else {
+        $('#next-tut').innerHTML = '<p class="muted">No tienes ninguna tutoría pendiente. Te avisaremos por correo cuando se publiquen las fechas de la próxima.</p>';
+      }
 
       const mine = mineList();
       $('#tut-nota').innerHTML = state.grupo.nota && !mine.length ? `<p class="muted">📎 ${esc(state.grupo.nota)}</p>` : '';
       $('#my-tutoria').innerHTML = mine.map((t) => `
-        <div class="msg ok">Tu tutoría${t.sesion ? ' «' + esc(t.sesion) + '»' : ''}: <b>${fmtDay(t.inicio)}, ${range(t)}</b>
-        ${t.meet ? `<br>Google Meet: ${link(t.meet)}` : ''}
-        <div style="font-size:13px;margin-top:4px">📩 La invitación con el enlace de Meet está en tu correo (${esc(state.alumno.email)}) y en tu Google Calendar.</div>
-        ${state.grupo.nota ? `<div style="font-size:13px;margin-top:4px">📎 ${esc(state.grupo.nota)}</div>` : ''}</div>`).join('')
+        <div class="msg ok">✓ Tu tutoría${t.sesion ? ' «' + esc(t.sesion) + '»' : ''}: <b>${fmtDay(t.inicio)}, ${range(t)}</b>
+        ${t.meet ? ` · <a href="${esc(t.meet)}" target="_blank" rel="noopener">Entrar en Meet</a>` : ''}</div>`).join('')
         + (mine.length && state.grupo.maxTutorias ? '<p class="muted">Si quieres cambiar de hueco, cancela primero tu tutoría.</p>' : '');
 
       $('#tutorias').innerHTML = state.tutorias.length
